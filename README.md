@@ -1,3 +1,4 @@
+https://github.com/Vazhdaichik95/weblarek.git
 # Проектная работа "Веб-ларек"
 
 Стек: HTML, SCSS, TS, Webpack
@@ -98,3 +99,88 @@ Presenter - презентер содержит основную логику п
 `emit<T extends object>(event: string, data?: T): void` - инициализация события. При вызове события в метод передается название события и объект с данными, который будет использован как аргумент для вызова обработчика.  
 `trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void` - возвращает функцию, при вызове которой инициализируется требуемое в параметрах событие с передачей в него данных из второго параметра.
 
+### Данные
+
+#### Интерфейс IProduct
+
+interface Iproduct {
+  id: string;
+  description: string;
+  image: string;
+  title: string;
+  category: string;
+  price: number | null;
+}
+
+#### Интерфейс IBuyer
+
+interface IBuyer {
+  payment: TPayment;
+  email: string;
+  phone: string;
+  address: string;
+}
+
+### Модели данных
+
+#### класс Catalog
+
+Содержит в себе массив всех товаров и выбранную пользователем карточку.
+
+Конструктор класса не принимает параметров.
+
+Поля класса:  
+`private products: Map<string, IProduct>)` -  хранит коллекцию товаров. Ключи коллекции - идентификаторы товаров, значения - товары.
+`private selectedProduct: Product` -  хранит выбранный товар. 
+
+Методы класса:  
+`set products(products: Map<string, Iproduct>)` - сохранение массива товаров, принимает массив товаров.  
+`get products()` - получение массива товаров.  
+`getProductById(id:string):IProduct` - получение товара по id, принимает id товара.
+`set selectedProduct(product: Iproduct)` - сохранение выбранного товара, принимает товар.  
+`get selectedProduct()` - получение выбранного массива.  
+
+
+#### класс Cart
+
+Содержит в себе массив товаров, выбранных покупателем для покупки.
+
+Конструктор класса не принимает параметров.
+
+Поля класса:  
+`private products: Map<string, IProduct>)` -  хранит коллекцию товаров, выбранных покупателем для покупки. Ключи коллекции - идентификаторы товаров, значения - товары.
+
+Методы класса:  
+`get products()` - получение массива товаров.  
+`addProduct(product: IProduct)` - добавление товара, принимает товар, выбранный покупателем.  
+`deleteProduct(product: IProduct)` - удаление товара, принимает товар, который нужно удалить из корзины.
+`clearCart()` - очищение корзины.  
+`getTotalPrice(): number` - получение общей суммы заказа. 
+`getCountProducts(): number` - получение количества товаров в корзине.
+`isProductInCart(id:string):boolean` - проверка наличия товара в корзине по id, принимает id товара. 
+
+#### класс Buyer
+
+Содержит в себе данные о покупателе.
+
+Расширяет интерфейс IBuyer.
+
+Конструктор класса не принимает параметров.
+
+Поля класса:  
+`payment: TPayment` - вид оплаты.
+`email: string` - email покупателя.
+`phone: string` - номер телефона.
+`address: string` - адрес доставки.
+
+Методы класса:  
+`set payment(payment: TPayment)` - сохранение вида оплаты.  
+`set email(email: string)` - сохранение email.
+`set phone(phone: string)` - сохранение телефона.
+`set address(address: string)` - сохранение адреса доставки.
+`get products()` - получение вида оплаты.
+`get products()` - получение email.
+`get products()` - получение телефона.
+`get products()` - получение адреса доставки.
+`clearData()` - очищение данных.  
+`validateData()` - проверка(валидация) данных
