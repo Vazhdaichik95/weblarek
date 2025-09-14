@@ -103,7 +103,7 @@ Presenter - презентер содержит основную логику п
 
 #### Интерфейс IProduct
 
-interface Iproduct {
+interface IProduct {
   id: string;
   description: string;
   image: string;
@@ -131,14 +131,14 @@ interface IBuyer {
 
 Поля класса:  
 `private products: Map<string, IProduct>)` -  хранит коллекцию товаров. Ключи коллекции - идентификаторы товаров, значения - товары.
-`private selectedProduct: Product` -  хранит выбранный товар. 
+`private selectedProduct: Product | null` -  хранит выбранный товар. 
 
 Методы класса:  
-`set products(products: Map<string, Iproduct>)` - сохранение массива товаров, принимает массив товаров.  
-`get products()` - получение массива товаров.  
-`getProductById(id:string):IProduct` - получение товара по id, принимает id товара.
-`set selectedProduct(product: Iproduct)` - сохранение выбранного товара, принимает товар.  
-`get selectedProduct()` - получение выбранного массива.  
+`setProducts(allProducts: IProduct[])` - сохранение коллекции товаров, принимает массив товаров.  
+`getProducts(): IProduct[]` - получение массива товаров.  
+`getProductById(id:string): IProduct` - получение товара по id, принимает id товара.
+`setSelectedProduct(product: Iproduct)` - сохранение выбранного товара, принимает товар.  
+`getSelectedProduct(): IProduct` - получение выбранного массива.  
 
 
 #### класс Cart
@@ -151,12 +151,12 @@ interface IBuyer {
 `private products: Map<string, IProduct>)` -  хранит коллекцию товаров, выбранных покупателем для покупки. Ключи коллекции - идентификаторы товаров, значения - товары.
 
 Методы класса:  
-`get products()` - получение массива товаров.  
+`getProducts()` - получение массива товаров.  
 `addProduct(product: IProduct)` - добавление товара, принимает товар, выбранный покупателем.  
 `deleteProduct(product: IProduct)` - удаление товара, принимает товар, который нужно удалить из корзины.
 `clearCart()` - очищение корзины.  
-`getTotalPrice(): number` - получение общей суммы заказа. 
-`getCountProducts(): number` - получение количества товаров в корзине.
+`totalPrice(): number` - получение общей суммы заказа. 
+`countProducts(): number` - получение количества товаров в корзине.
 `isProductInCart(id:string):boolean` - проверка наличия товара в корзине по id, принимает id товара. 
 
 #### класс Buyer
@@ -174,13 +174,13 @@ interface IBuyer {
 `address: string` - адрес доставки.
 
 Методы класса:  
-`set payment(payment: TPayment)` - сохранение вида оплаты.  
-`set email(email: string)` - сохранение email.
-`set phone(phone: string)` - сохранение телефона.
-`set address(address: string)` - сохранение адреса доставки.
-`get products()` - получение вида оплаты.
-`get products()` - получение email.
-`get products()` - получение телефона.
-`get products()` - получение адреса доставки.
+`setPayment(payment: TPayment)` - сохранение вида оплаты.  
+`setEmail(email: string)` - сохранение email.
+`setPhone(phone: string)` - сохранение телефона.
+`setAddress(address: string)` - сохранение адреса доставки.
+`getPayment()` - получение вида оплаты.
+`getEmail()` - получение email.
+`getPhone()` - получение телефона.
+`getAddress()` - получение адреса доставки.
 `clearData()` - очищение данных.  
-`validateData()` - проверка(валидация) данных
+`validateData(): string` - проверка(валидация) данных
