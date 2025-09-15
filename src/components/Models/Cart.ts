@@ -27,8 +27,8 @@ export class Cart {
   /**
    * удаление товара, принимает товар, который нужно удалить из корзины.
    */
-  deleteProduct(product: IProduct) {
-    this.products.delete(product.id);
+  deleteProduct(id: string) {
+    this.products.delete(id);
   }
 
   /**

@@ -153,7 +153,7 @@ interface IBuyer {
 Методы класса:  
 `getProducts()` - получение массива товаров.  
 `addProduct(product: IProduct)` - добавление товара, принимает товар, выбранный покупателем.  
-`deleteProduct(product: IProduct)` - удаление товара, принимает товар, который нужно удалить из корзины.
+`deleteProduct(id: string)` - удаление товара, принимает id товара, который нужно удалить из корзины.
 `clearCart()` - очищение корзины.  
 `totalPrice(): number` - получение общей суммы заказа. 
 `countProducts(): number` - получение количества товаров в корзине.
@@ -168,10 +168,7 @@ interface IBuyer {
 Конструктор класса не принимает параметров.
 
 Поля класса:  
-`payment: TPayment` - вид оплаты.
-`email: string` - email покупателя.
-`phone: string` - номер телефона.
-`address: string` - адрес доставки.
+`private buyerData: IBuyer` - хранит данные покупателя
 
 Методы класса:  
 `setPayment(payment: TPayment)` - сохранение вида оплаты.  
@@ -184,3 +181,6 @@ interface IBuyer {
 `getAddress()` - получение адреса доставки.
 `clearData()` - очищение данных.  
 `validateData(): string` - проверка(валидация) данных
+
+### Слой коммуникации
+

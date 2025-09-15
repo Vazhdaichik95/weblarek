@@ -29,13 +29,22 @@ export class Catalog {
   /**
    * получение товара по id, принимает id товара (string).
    */
-  getProductById(id:string):IProduct | null {
+  getProductById(id:string):IProduct {
+    let foundProduct: IProduct = {
+      id: '',
+      description: '',
+      image: '',
+      title: '',
+      category: '',
+      price: null
+    };
+    
     this.products.forEach((product, idProduct) => {
       if(idProduct === id) {
-        return product;
+        foundProduct = product;
       }
     });
-    return null;
+    return foundProduct;
   }
 
   /**
