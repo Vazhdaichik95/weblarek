@@ -22,3 +22,24 @@ export interface IBuyer {
   phone: string;
   address: string;
 }
+
+export interface IApiResponse<T> {
+  total: number;
+  items: T[];
+}
+
+export type TProductsResponse = IApiResponse<IProduct>;
+
+export type TOrder = {
+  payment: TPayment;
+  email: string;
+  phone: string;
+  address: string;
+  total: number;
+  items: string[];
+}
+
+export type TOrderResponse = {
+  id: string;
+  total: number;
+}

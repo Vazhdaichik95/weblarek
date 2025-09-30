@@ -1,7 +1,11 @@
+import { DataFromAPI } from './communicate/DataFromAPI';
+import { Api } from './components/base/Api';
 import { Buyer } from './components/Models/Buyer';
 import { Cart } from './components/Models/Cart';
 import { Catalog } from './components/Models/Catalog';
 import './scss/styles.scss';
+import { IProduct } from './types';
+import { API_URL } from './utils/constants';
 import { apiProducts } from './utils/data';
 
 const catalog= new Catalog();
@@ -39,4 +43,9 @@ buyer.setPhone('+7(900)123-45-67');
 console.log('Валидация данных покупателя:', buyer.validateData());
 buyer.setAddress('Россия');
 console.log('Валидация данных покупателя:', buyer.validateData());
+
+const api= new DataFromAPI(new Api(API_URL));
+
+catalog.setProducts(Array.from(await api.getAllProducts()));
+console.log('Массив товаров из каталога, полученный через API: ', catalog.getProducts());
 
