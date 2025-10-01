@@ -20,8 +20,8 @@ export class Cart {
   /**
    * добавление товара, принимает товар (IProduct), выбранный покупателем.
    */
-  addProduct(product: IProduct) {
-    this.products.set(product.id, product);
+  addProduct(product: IProduct|undefined) {
+    if(product) this.products.set(product.id, product);
   }
 
   /**
@@ -60,6 +60,6 @@ export class Cart {
    * проверка наличия товара в корзине по id, принимает id товара.
    */
   isProductInCart(id:string):boolean {
-    return this.products.get(id) !== undefined? true: false;
+    return this.products.get(id) !== undefined;
   }
 }

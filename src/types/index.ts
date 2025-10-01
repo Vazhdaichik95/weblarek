@@ -43,3 +43,10 @@ export type TOrderResponse = {
   id: string;
   total: number;
 }
+
+export type TValidateErrors = {
+  payment: string;
+  email: string;
+  phone: string;
+  address: string;
+}

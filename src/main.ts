@@ -3,8 +3,6 @@ import { Api } from './components/base/Api';
 import { Buyer } from './components/Models/Buyer';
 import { Cart } from './components/Models/Cart';
 import { Catalog } from './components/Models/Catalog';
-import './scss/styles.scss';
-import { IProduct } from './types';
 import { API_URL } from './utils/constants';
 import { apiProducts } from './utils/data';
 

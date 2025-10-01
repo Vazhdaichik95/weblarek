@@ -1,4 +1,4 @@
-import { IBuyer, TPayment } from "../../types";
+import { IBuyer, TPayment, TValidateErrors } from "../../types";
 
 export class Buyer {
   private buyerData: IBuyer;
@@ -81,11 +81,12 @@ export class Buyer {
   /**
    * проверка(валидация) данных
    */
-  validateData(): string {
-    if(this.buyerData.payment === '') return 'Необходимо выбрать способ оплаты';
-    if(this.buyerData.email === '') return 'Необходимо ввести email';
-    if(this.buyerData.phone === '') return 'Необходимо ввести номер телефона';
-    if(this.buyerData.address === '') return 'Необходимо ввести адрес доставки';
-    return '';
+  validateData(): TValidateErrors {
+    return {
+      payment: this.buyerData.payment === '' ? 'Необходимо выбрать способ оплаты': '',
+      email: this.buyerData.email === '' ? 'Необходимо ввести email' : '',
+      phone: this.buyerData.phone === '' ? 'Необходимо ввести номер телефона' : '',
+      address: this.buyerData.address === '' ? 'Необходимо ввести адрес доставки' : ''
+    }
   }
 }

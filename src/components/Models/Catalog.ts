@@ -29,22 +29,8 @@ export class Catalog {
   /**
    * получение товара по id, принимает id товара (string).
    */
-  getProductById(id:string):IProduct {
-    let foundProduct: IProduct = {
-      id: '',
-      description: '',
-      image: '',
-      title: '',
-      category: '',
-      price: null
-    };
-    
-    this.products.forEach((product, idProduct) => {
-      if(idProduct === id) {
-        foundProduct = product;
-      }
-    });
-    return foundProduct;
+  getProductById(id:string):IProduct|undefined {
+    return Array.from(this.products.values()).find((product) => product.id===id);
   }
 
   /**
