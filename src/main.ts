@@ -3,12 +3,19 @@ import { Api } from './components/base/Api';
 import { Buyer } from './components/Models/Buyer';
 import { Cart } from './components/Models/Cart';
 import { Catalog } from './components/Models/Catalog';
+import './scss/styles.scss';
+import { IProduct } from './types';
+import { Header } from './components/Views/HeaderView';
 import { API_URL } from './utils/constants';
 import { apiProducts } from './utils/data';
+import { ensureElement } from './utils/utils';
+import { EventEmitter } from './components/base/Events';
 
 const catalog= new Catalog();
 const cart = new Cart();
 const buyer = new Buyer();
+
+
 catalog.setProducts(apiProducts.items);
 
 console.log('Массив товаров из каталога: ', catalog.getProducts());
@@ -46,4 +53,14 @@ const api= new DataFromAPI(new Api(API_URL));
 
 catalog.setProducts(Array.from(await api.getAllProducts()));
 console.log('Массив товаров из каталога, полученный через API: ', catalog.getProducts());
+
+
+const events = new EventEmitter();
+
+const headerElem = ensureElement<HTMLElement>('.header__container');
+console.log(headerElem);
+const header = new Header(events, headerElem);
+
+header.counter=3;
+
 
