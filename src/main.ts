@@ -12,8 +12,10 @@ import { cloneTemplate, ensureElement } from './utils/utils';
 import { EventEmitter } from './components/base/Events';
 import { Modal } from './components/Views/ModalView';
 import { CardCatalogView } from './components/Views/CardCatalogView';
-import { toCardViewData } from './utils/mappers';
+import { toCardViewData, toCartItemData } from './utils/mappers';
 import { CatalogView } from './components/Views/CatalogView';
+import { CardPreviewView } from './components/Views/CardPreviewView';
+import { CartView } from './components/Views/CartView';
 
 const catalog= new Catalog();
 const cart = new Cart();
@@ -26,6 +28,8 @@ console.log('Массив товаров из каталога, полученн
 
 
 const events = new EventEmitter();
+
+const cartView = new CartView(events);
 
 const gallery = ensureElement<HTMLElement>('.gallery');
 
@@ -46,17 +50,27 @@ const modalRoot = ensureElement<HTMLElement>('#modal-container');
 const modal = new Modal(events, modalRoot);
 
 const headerElem = ensureElement<HTMLElement>('.header__container');
-console.log(headerElem);
 const header = new Header(events, headerElem);
 
 events.on('basket:open', () => {
-  modal.open(headerElem);
+  modal.open(cartView.getElement());
 });
 
-const element = cloneTemplate<HTMLButtonElement>('#card-catalog');
+events.on<{id: string}>('card:select', ({id}) => {
+  const product = catalog.getProductById(id);
+  if(!product) return;
 
-console.log(element);
+  const cardPreviewView = new CardPreviewView(events);
+  cardPreviewView.setCartChecker((productId) => cart.isProductInCart(productId));
+  const inCart = cart.isProductInCart(product.id);
+  modal.open(cardPreviewView.render(product,inCart));
+});
 
-header.counter=3;
+events.on<IProduct>('cart:add', (product) => {
+  cart.addProduct(product);
+  cartView.render(toCartItemData(cart.getProducts()));
+  header.counter=cart.getProducts().length;
+  events.emit('cart:changed');
+})
 
 

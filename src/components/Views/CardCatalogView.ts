@@ -1,4 +1,4 @@
-import { cloneTemplate, ensureElement } from "../../utils/utils";
+import { cloneTemplate, ensureElement, resolveImagePath } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
 
@@ -26,6 +26,10 @@ export class CardCatalogView extends Component<CardViewData>{
     this.imageElement = ensureElement<HTMLImageElement>('.card__image', this.element)!;
 
     this.render(this.data);
+
+    this.element.addEventListener('click', () => {
+      events.emit('card:select', {id: this.data.id});
+    })
   }
 
   render(data: CardViewData): HTMLButtonElement {
@@ -42,7 +46,7 @@ export class CardCatalogView extends Component<CardViewData>{
     //this.setCategory(data.category);
 
     // Картинка
-    this.imageElement.src = data.image;//resolveImagePath(data.image);
+    this.imageElement.src = resolveImagePath(data.image);
     this.imageElement.alt = data.title;
 
     return this.element;
