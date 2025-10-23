@@ -6,12 +6,13 @@ interface ModalData {
     content: HTMLElement;
 }
 
-export class Modal extends Component<ModalData> {
+export class ModalView extends Component<ModalData> {
     protected rootContainer: HTMLElement;
     protected container: HTMLElement;
     protected closeButton: HTMLButtonElement;
 
-    constructor(protected events: IEvents, rootContainer: HTMLElement) {
+    constructor(protected events: IEvents, nameContainer: string) {
+        const rootContainer = ensureElement<HTMLElement>(nameContainer);
         super(rootContainer);
         this.rootContainer=rootContainer;
 

@@ -1,21 +1,21 @@
-import { CardViewData } from "../components/Views/CardCatalogView";
-import { CartItemData } from "../components/Views/CartView";
+import { CardCatalogData } from "../components/Views/CardCatalogView";
+import { CardInCartData } from "../components/Views/CardInCartView";
 import { IProduct } from "../types";
 
-export function toCardViewData(products: IProduct[]): CardViewData[] {
-  return products.map((p) => ({
-    id: p.id,
-    title: p.title,
-    price: p.price ?? null,
-    category: p.category,//normalizeCategory(p.category),
-    image: p.image,
-  }));
-}
+export function toCardCatalogData(product: IProduct): CardCatalogData {
+    return {
+      id: product.id,
+      title: product.title,
+      price: product.price ?? null,
+      category: product.category,//normalizeCategory(p.category),
+      image: product.image,
+    }
+  };
 
-export function toCartItemData(items: IProduct[]): CartItemData[] {
-  return items.map((p) => ({
-    id: p.id,
-    title: p.title,
-    price: p.price ?? 0,
-  }));
+export function toCardInCartData(product: IProduct): CardInCartData {
+  return {
+    id: product.id,
+    title: product.title,
+    price: product.price ?? 0,
+  };
 }

@@ -1,58 +1,37 @@
-import { DataFromAPI } from './communicate/DataFromAPI';
-import { Api } from './components/base/Api';
-import { Buyer } from './components/Models/Buyer';
-import { Cart } from './components/Models/Cart';
-import { Catalog } from './components/Models/Catalog';
 import './scss/styles.scss';
-import { IProduct, OrderNextPayload } from './types';
-import { Header } from './components/Views/HeaderView';
-import { API_URL } from './utils/constants';
-import { cloneTemplate, ensureElement } from './utils/utils';
-import { EventEmitter } from './components/base/Events';
-import { Modal } from './components/Views/ModalView';
-import { CardCatalogView } from './components/Views/CardCatalogView';
-import { toCardViewData, toCartItemData } from './utils/mappers';
-import { CatalogView } from './components/Views/CatalogView';
-import { CardPreviewView } from './components/Views/CardPreviewView';
-import { CartView } from './components/Views/CartView';
-import { OrderFormView } from './components/Views/OrderFormView';
-import { ContactsFormView } from './components/Views/ContactsFormView';
-import { SuccessView } from './components/Views/SuccessView';
+import { PresenterApp } from './components/Presenter/PresenterApp';
 
-const catalog= new Catalog();
-const cart = new Cart();
-const buyer = new Buyer();
+const app = new PresenterApp();
+app.init();
+/*const catalog= new Catalog();//+
+const cart = new Cart();//+
+const buyer = new Buyer();//+
 
-const api= new DataFromAPI(new Api(API_URL));
+const api= new DataFromAPI(new Api(API_URL));//+
 
-catalog.setProducts(Array.from(await api.getAllProducts()));
+catalog.setProducts(Array.from(await api.getAllProducts()));//+
 console.log('Массив товаров из каталога, полученный через API: ', catalog.getProducts());
 
 
-const events = new EventEmitter();
+const events = new EventEmitter();//+
 
-const cartView = new CartView(events);
+const cartView = new CartView(events);//+
 
-const gallery = ensureElement<HTMLElement>('.gallery');
+const catalogView = new CatalogView('.gallery');//+
 
-const catalogView = new CatalogView(gallery);
-
-const cards: HTMLElement[] = [];
+const cards: HTMLElement[] = [];//+
 
 toCardViewData(catalog.getProducts()).forEach((card) => {
   const cardView = new CardCatalogView(events, cloneTemplate<HTMLButtonElement>('#card-catalog') , card);
   cardView.render(card);
   cards.push(cardView.getElement());
-});
+});//+
 
-catalogView.content=cards;
+catalogView.content=cards;//+
 
-const modalRoot = ensureElement<HTMLElement>('#modal-container');
+const modal = new ModalView(events, '#modal-container');//+
 
-const modal = new Modal(events, modalRoot);
-
-const headerElem = ensureElement<HTMLElement>('.header__container');
-const header = new Header(events, headerElem);
+const header = new HeaderView(events, '.header__container');//+
 
 events.on('basket:open', () => {
   modal.open(cartView.getElement());
@@ -66,14 +45,14 @@ events.on<{id: string}>('card:select', ({id}) => {
   cardPreviewView.setCartChecker((productId) => cart.isProductInCart(productId));
   const inCart = cart.isProductInCart(product.id);
   modal.open(cardPreviewView.render(product,inCart));
-});
+}); //+
 
 events.on<IProduct>('cart:add', (product) => {
   cart.addProduct(product);
   cartView.render(toCartItemData(cart.getProducts()));
   header.counter=cart.getProducts().length;
   events.emit('cart:changed');
-})
+});//+
 
 events.on<{ index: number }>('cart:remove', ({ index }) => {
     const items = cart.getProducts();
@@ -130,4 +109,4 @@ events.on<{ index: number }>('cart:remove', ({ index }) => {
   events.on('success:close', () => {
     modal.close();
   });
-
+*/

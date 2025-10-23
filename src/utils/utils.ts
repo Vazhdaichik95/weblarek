@@ -1,3 +1,4 @@
+import { IProduct } from "../types";
 import { API_ORIGIN } from "./constants";
 
 export function pascalToKebab(value: string): string {
@@ -163,4 +164,12 @@ export function resolveImagePath(path: string): string {
   // 4) Любой другой относительный путь (например "/5_Dots.svg" или "Leaf.svg")
   const file = path.replace(/^\//, '').replace(/\.svg(\?.*)?$/, '.png$1');
   return `${API_ORIGIN.replace(/\/$/, '')}/content/weblarek/${file}`;
+}
+
+export function getTotalPrice(products: IProduct[]) {
+    let total=0;
+    products.forEach((product) => {
+        if(product.price) total+=product.price;
+    });
+    return total;
 }

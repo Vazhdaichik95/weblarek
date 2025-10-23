@@ -6,11 +6,12 @@ interface IHeaderData {
   counter: number;
 }
 
-export class Header extends Component<IHeaderData> {
+export class HeaderView extends Component<IHeaderData> {
   protected counterElement: HTMLElement;
   protected cartButton: HTMLButtonElement;
 
-  constructor(protected events: IEvents, container: HTMLElement) {
+  constructor(protected events: IEvents, nameContainer: string) {
+    const container = ensureElement<HTMLElement>(nameContainer);
     super(container);
 
     this.counterElement = ensureElement<HTMLElement>('.header__basket-counter', this.container);

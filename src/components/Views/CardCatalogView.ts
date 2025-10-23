@@ -2,7 +2,7 @@ import { cloneTemplate, ensureElement, resolveImagePath } from "../../utils/util
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
 
-export interface CardViewData {
+export interface CardCatalogData {
   id: string;
   title: string;
   price: number | null;
@@ -10,16 +10,17 @@ export interface CardViewData {
   image: string;
 }
 
-export class CardCatalogView extends Component<CardViewData>{
+export class CardCatalogView extends Component<CardCatalogData>{
   private element: HTMLButtonElement;
   private titleElement: HTMLElement;
   private priceElement: HTMLElement;
   private categoryElement: HTMLElement;
   private imageElement: HTMLImageElement;
 
-  constructor(protected events: IEvents, rootContainer: HTMLElement, private data: CardViewData) {
+  constructor(protected events: IEvents, private data: CardCatalogData) {
+    const rootContainer = cloneTemplate<HTMLButtonElement>('#card-catalog');
     super(rootContainer);
-    this.element = cloneTemplate<HTMLButtonElement>('#card-catalog');
+    this.element = rootContainer;
     this.titleElement = ensureElement<HTMLElement>('.card__title', this.element)!;
     this.priceElement = ensureElement<HTMLElement>('.card__price', this.element)!;
     this.categoryElement = ensureElement<HTMLElement>('.card__category', this.element)!;
@@ -32,7 +33,7 @@ export class CardCatalogView extends Component<CardViewData>{
     })
   }
 
-  render(data: CardViewData): HTMLButtonElement {
+  render(data: CardCatalogData): HTMLButtonElement {
     this.data = data;
 
     this.titleElement.textContent = data.title;

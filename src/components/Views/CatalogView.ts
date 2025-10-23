@@ -1,3 +1,4 @@
+import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 
 interface CatalogData {
@@ -7,7 +8,8 @@ interface CatalogData {
 export class CatalogView extends Component<CatalogData> {
   container: HTMLElement;
 
-  constructor(rootContainer: HTMLElement) {
+  constructor(nameContainer: string) {
+    const rootContainer = ensureElement<HTMLElement>(nameContainer);
     super(rootContainer);
 
     this.container= rootContainer;

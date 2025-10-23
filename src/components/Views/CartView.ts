@@ -1,22 +1,25 @@
 import { cloneTemplate } from '../../utils/utils';
+import { Component } from '../base/Component';
 import { IEvents } from '../base/Events';
+import { CardInCartData } from './CardInCartView';
 
-export interface CartItemData {
-  id: string;
-  title: string;
-  price: number;
+export interface CartData {
+  content: HTMLElement[];
+  totalPrice: number;
 }
 
-export class CartView {
+export class CartView extends Component<CartData>{
   private element: HTMLElement;
-  private listEl: HTMLElement;
-  private totalEl: HTMLElement;
+  private listElement: HTMLElement;
+  private totalElement: HTMLElement;
   private orderButton: HTMLButtonElement;
 
   constructor(protected events: IEvents) {
-    this.element = cloneTemplate<HTMLElement>('#basket');
-    this.listEl = this.element.querySelector('.basket__list')!;
-    this.totalEl = this.element.querySelector('.basket__price')!;
+    const rootContainer = cloneTemplate<HTMLElement>('#basket');
+    super(rootContainer);
+    this.element = rootContainer;
+    this.listElement = this.element.querySelector('.basket__list')!;
+    this.totalElement = this.element.querySelector('.basket__price')!;
     this.orderButton = this.element.querySelector('.basket__button')!;
 
     this.orderButton.addEventListener('click', () => {
@@ -24,27 +27,19 @@ export class CartView {
     });
   }
 
+  set totalPrice(total: number) {
+    this.totalElement.textContent = `${total} синапсов`;
+  }
+
   /** Отрисовываем список товаров */
-  render(items: CartItemData[]) {
-    this.listEl.innerHTML = '';
+  set content(items: HTMLElement[]) {
+    this.listElement.innerHTML = '';
     let total = 0;
 
-    items.forEach((item, index) => {
-      const li = cloneTemplate<HTMLLIElement>('#card-basket');
-      li.querySelector('.basket__item-index')!.textContent = String(index + 1);
-      li.querySelector('.card__title')!.textContent = item.title;
-      li.querySelector('.card__price')!.textContent = `${item.price} синапсов`;
-
-      li.querySelector('.basket__item-delete')!
-        .addEventListener('click', () => {
-          this.events.emit('cart:remove', { index });
-        });
-
-      this.listEl.appendChild(li);
-      total += item.price;
+    items.forEach((item) => {
+      this.listElement.appendChild(item);
     });
 
-    this.totalEl.textContent = `${total} синапсов`;
     this.orderButton.disabled = items.length === 0;
   }
 

@@ -11,7 +11,6 @@ export class CardPreviewView {
   private imageEl: HTMLImageElement;
   private buttonEl: HTMLButtonElement;
 
-  // текущий товар и функция-проверка «товар в корзине?»
   private currentProduct: IProduct | null = null;
   private checkInCart: ((id: string) => boolean) | null = null;
 
@@ -24,7 +23,7 @@ export class CardPreviewView {
     this.imageEl = this.element.querySelector('.card__image')!;
     this.buttonEl = this.element.querySelector('.card__button')!;
 
-    // когда корзина меняется — обновляем кнопку в открытой карточке
+  // обновление кнопки в открытой карточке при изменении корзины
   events.on('cart:changed', () => {
       if (this.currentProduct && this.checkInCart) {
         const inCart = this.checkInCart(this.currentProduct.id);
@@ -33,7 +32,7 @@ export class CardPreviewView {
     });
   }
 
-  /** Даст вьюшке способ узнать «в корзине ли товар» */
+  // проверка на наличие в корзине
   public setCartChecker(fn: (id: string) => boolean) {
     this.checkInCart = fn;
   }
