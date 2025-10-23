@@ -1,4 +1,3 @@
-// src/components/Views/CartView.ts
 import { cloneTemplate } from '../../utils/utils';
 import { IEvents } from '../base/Events';
 

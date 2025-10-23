@@ -40,6 +40,13 @@ export class Buyer {
     this.buyerData.address=address;
   }
 
+  setBuyerData(data: Partial<IBuyer>) {
+    this.buyerData.payment = data.payment ?? this.buyerData.payment;
+    this.buyerData.email = data.email ?? this.buyerData.email;
+    this.buyerData.phone = data.phone ?? this.buyerData.phone;
+    this.buyerData.address = data.address ?? this.buyerData.address;
+  }
+
   /**
    * получение вида оплаты.
    */
@@ -66,6 +73,10 @@ export class Buyer {
    */
   getAddress(): string {
     return this.buyerData.address;
+  }
+
+  getBuyerData(): IBuyer {
+    return this.buyerData;
   }
 
   /**

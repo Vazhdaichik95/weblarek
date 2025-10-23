@@ -4,10 +4,9 @@ import { Buyer } from './components/Models/Buyer';
 import { Cart } from './components/Models/Cart';
 import { Catalog } from './components/Models/Catalog';
 import './scss/styles.scss';
-import { IProduct } from './types';
+import { IProduct, OrderNextPayload } from './types';
 import { Header } from './components/Views/HeaderView';
 import { API_URL } from './utils/constants';
-import { apiProducts } from './utils/data';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { EventEmitter } from './components/base/Events';
 import { Modal } from './components/Views/ModalView';
@@ -16,6 +15,9 @@ import { toCardViewData, toCartItemData } from './utils/mappers';
 import { CatalogView } from './components/Views/CatalogView';
 import { CardPreviewView } from './components/Views/CardPreviewView';
 import { CartView } from './components/Views/CartView';
+import { OrderFormView } from './components/Views/OrderFormView';
+import { ContactsFormView } from './components/Views/ContactsFormView';
+import { SuccessView } from './components/Views/SuccessView';
 
 const catalog= new Catalog();
 const cart = new Cart();
@@ -35,7 +37,7 @@ const gallery = ensureElement<HTMLElement>('.gallery');
 
 const catalogView = new CatalogView(gallery);
 
-const cards: HTMLElement[] = []
+const cards: HTMLElement[] = [];
 
 toCardViewData(catalog.getProducts()).forEach((card) => {
   const cardView = new CardCatalogView(events, cloneTemplate<HTMLButtonElement>('#card-catalog') , card);
@@ -73,4 +75,59 @@ events.on<IProduct>('cart:add', (product) => {
   events.emit('cart:changed');
 })
 
+events.on<{ index: number }>('cart:remove', ({ index }) => {
+    const items = cart.getProducts();
+    items.splice(index, 1);
+
+    cart.clearCart();
+    items.forEach(item => cart.addProduct(item));
+
+    cartView.render(toCartItemData(cart.getProducts()));
+    header.counter=cart.getProducts().length;
+    events.emit('cart:changed');
+  });
+
+  events.on<{ id: string }>('cart:remove-by-id', ({ id }) => {
+    cart.deleteProduct(id);
+    cartView.render(toCartItemData(cart.getProducts()));
+    header.counter=cart.getProducts().length;
+    events.emit('cart:changed');
+  });
+
+  events.on('cart:order', () => {
+    const orderForm = new OrderFormView(events, buyer.getBuyerData());
+    modal.open(orderForm.getElement());
+  });
+
+  events.on<OrderNextPayload>('order:next', ({ payment, address }) => {
+    buyer.setBuyerData({ payment, address });
+    const contactsForm = new ContactsFormView(events);
+    modal.open(contactsForm.getElement());
+  });
+
+  events.on<{ email: string; phone: string }>('order:confirm', async ({ email, phone }) => {
+    buyer.setBuyerData({ email, phone });
+
+      const order = {
+        ...buyer.getBuyerData(),
+        items: cart.getProducts().map((p) => p.id),
+        total: cart.totalPrice(),
+      };
+
+      try {
+        const result: { total: number } = await api.sendOrder(order);
+        const success = new SuccessView(events);
+        modal.open(success.render(result.total));
+
+        cart.clearCart();
+        cartView.render([]);
+        header.counter=cart.getProducts().length;
+      } catch (err) {
+        console.error('Ошибка при заказе:', err);
+      }
+    });
+
+  events.on('success:close', () => {
+    modal.close();
+  });
 

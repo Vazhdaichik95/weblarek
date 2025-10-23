@@ -1,4 +1,3 @@
-// src/components/Views/ProductPreviewView.ts
 import { IProduct } from '../../types/index';
 import { cloneTemplate, resolveImagePath } from '../../utils/utils';
 import { IEvents } from '../base/Events';
