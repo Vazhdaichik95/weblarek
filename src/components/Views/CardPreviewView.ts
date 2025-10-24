@@ -1,33 +1,64 @@
-import { IProduct } from '../../types/index';
-import { cloneTemplate, resolveImagePath } from '../../utils/utils';
-import { IEvents } from '../base/Events';
+import { IProduct } from "../../types/index";
+import {
+  cloneTemplate,
+  ensureElement,
+  resolveImagePath,
+  setCategory,
+} from "../../utils/utils";
+import { Component } from "../base/Component";
+import { events } from "../base/Events";
 
-export class CardPreviewView {
+interface CardPreviewData {
+  product: IProduct;
+  onCart: boolean;
+}
+
+export class CardPreviewView extends Component<CardPreviewData> {
   private element: HTMLElement;
-  private titleEl: HTMLElement;
-  private descriptionEl: HTMLElement;
-  private priceEl: HTMLElement;
-  private categoryEl: HTMLElement;
-  private imageEl: HTMLImageElement;
-  private buttonEl: HTMLButtonElement;
+  private titleElement: HTMLElement;
+  private descriptionElement: HTMLElement;
+  private priceElement: HTMLElement;
+  private categoryElement: HTMLElement;
+  private imageElement: HTMLImageElement;
+  private buttonElement: HTMLButtonElement;
 
-  private currentProduct: IProduct | null = null;
+  private onCartValue = false;
   private checkInCart: ((id: string) => boolean) | null = null;
 
-  constructor(protected events: IEvents) {
-    this.element = cloneTemplate<HTMLElement>('#card-preview');
-    this.titleEl = this.element.querySelector('.card__title')!;
-    this.descriptionEl = this.element.querySelector('.card__text')!;
-    this.priceEl = this.element.querySelector('.card__price')!;
-    this.categoryEl = this.element.querySelector('.card__category')!;
-    this.imageEl = this.element.querySelector('.card__image')!;
-    this.buttonEl = this.element.querySelector('.card__button')!;
+  constructor() {
+    const rootContainer = cloneTemplate<HTMLElement>("#card-preview");
+    super(rootContainer);
+    this.element = rootContainer;
+    this.titleElement = ensureElement<HTMLElement>(
+          ".card__title",
+          this.element
+        );
+    this.descriptionElement = ensureElement<HTMLElement>(
+          ".card__text",
+          this.element
+        );
+    this.priceElement = ensureElement<HTMLElement>(
+          ".card__price",
+          this.element
+        );
+    this.categoryElement = ensureElement<HTMLElement>(
+          ".card__category",
+          this.element
+        );
+    this.imageElement = ensureElement<HTMLImageElement>(
+          ".card__image",
+          this.element
+        );
+    this.buttonElement = ensureElement<HTMLButtonElement>(
+          ".card__button",
+          this.element
+        );
 
-  // обновление кнопки в открытой карточке при изменении корзины
-  events.on('cart:changed', () => {
-      if (this.currentProduct && this.checkInCart) {
-        const inCart = this.checkInCart(this.currentProduct.id);
-        this.updateButton(this.currentProduct, inCart);
+    // обновление кнопки в открытой карточке при изменении корзины
+    events.on("cart:changed", () => {
+      if (this.product && this.checkInCart) {
+        const inCart = this.checkInCart(this.product.id);
+        this.updateButton(this.product, inCart);
       }
     });
   }
@@ -37,31 +68,31 @@ export class CardPreviewView {
     this.checkInCart = fn;
   }
 
-  /** Рендер карточки. inCart — текущее состояние для кнопки */
-  render(product: IProduct, inCart = false): HTMLElement {
-    this.currentProduct = product;
+  set onCart(value: boolean) {
+    this.onCartValue = value;
+  }
 
+  set product(productData: IProduct) {
     // Текстовые поля
-    this.titleEl.textContent = product.title;
-    this.descriptionEl.textContent = product.description || '';
+    this.titleElement.textContent = productData.title;
+    this.descriptionElement.textContent = productData.description || "";
 
     // Цена
-    this.priceEl.textContent =
-      product.price === null ? 'Бесценно' : `${product.price} синапсов`;
+    this.priceElement.textContent =
+      productData.price === null ? "Бесценно" : `${productData.price} синапсов`;
 
-    // Категория + модификатор
-    /*const entry = Object.values(categoryMap).find((c) => c.mod === product.category);
-    this.categoryEl.className = `card__category card__category_${product.category}`;*/
-    this.categoryEl.textContent = product.category;
+    // Категория
+    this.categoryElement = setCategory(
+      productData.category,
+      this.categoryElement
+    );
 
     // Картинка
-    this.imageEl.src = resolveImagePath(product.image);
-    this.imageEl.alt = product.title;
+    this.imageElement.src = resolveImagePath(productData.image);
+    this.imageElement.alt = productData.title;
 
-    // Кнопка (зависит от inCart и цены)
-   this.updateButton(product, inCart);
-
-    return this.element;
+    // Кнопка (зависит от onCart и цены)
+    this.updateButton(productData, this.onCartValue);
   }
 
   getElement(): HTMLElement {
@@ -70,26 +101,27 @@ export class CardPreviewView {
 
   /** Обновляет текст/состояние/обработчик кнопки */
   private updateButton(product: IProduct, inCart: boolean) {
-  if (product.price === null) {
-    this.priceEl.textContent = 'Бесценно';
-    this.buttonEl.disabled = true;
-    this.buttonEl.textContent = 'Недоступно';
-    this.buttonEl.onclick = null;
-  } else {
-    this.priceEl.textContent = `${product.price} синапсов`;
-    this.buttonEl.disabled = false;
-    this.buttonEl.onclick = null;
-
-    if (inCart) {
-      this.buttonEl.textContent = 'Удалить из корзины';
-      this.buttonEl.onclick = () => {
-        this.events.emit('cart:remove-by-id', { id: product.id });
-      };
+    if (product.price === null) {
+      this.priceElement.textContent = "Бесценно";
+      this.buttonElement.disabled = true;
+      this.buttonElement.textContent = "Недоступно";
+      this.buttonElement.onclick = null;
     } else {
-      this.buttonEl.textContent = 'Купить';
-      this.buttonEl.onclick = () => {
-        this.events.emit('cart:add', product);
-      };
+      this.priceElement.textContent = `${product.price} синапсов`;
+      this.buttonElement.disabled = false;
+      this.buttonElement.onclick = null;
+
+      if (inCart) {
+        this.buttonElement.textContent = "Удалить из корзины";
+        this.buttonElement.onclick = () => {
+          events.emit("cart:remove-by-id", { id: product.id });
+        };
+      } else {
+        this.buttonElement.textContent = "Купить";
+        this.buttonElement.onclick = () => {
+          events.emit("cart:add", product);
+        };
+      }
     }
-  }}
+  }
 }

@@ -1,29 +1,37 @@
-import { cloneTemplate } from '../../utils/utils';
-import { Component } from '../base/Component';
-import { IEvents } from '../base/Events';
-import { CardInCartData } from './CardInCartView';
+import { cloneTemplate, ensureElement } from "../../utils/utils";
+import { Component } from "../base/Component";
+import { events } from "../base/Events";
 
 export interface CartData {
   content: HTMLElement[];
   totalPrice: number;
 }
 
-export class CartView extends Component<CartData>{
+export class CartView extends Component<CartData> {
   private element: HTMLElement;
   private listElement: HTMLElement;
   private totalElement: HTMLElement;
   private orderButton: HTMLButtonElement;
 
-  constructor(protected events: IEvents) {
-    const rootContainer = cloneTemplate<HTMLElement>('#basket');
+  constructor() {
+    const rootContainer = cloneTemplate<HTMLElement>("#basket");
     super(rootContainer);
     this.element = rootContainer;
-    this.listElement = this.element.querySelector('.basket__list')!;
-    this.totalElement = this.element.querySelector('.basket__price')!;
-    this.orderButton = this.element.querySelector('.basket__button')!;
+    this.listElement = ensureElement<HTMLElement>(
+          ".basket__list",
+          this.element
+        )!;
+    this.totalElement = ensureElement<HTMLElement>(
+          ".basket__price",
+          this.element
+        )!;
+    this.orderButton = ensureElement<HTMLButtonElement>(
+          ".basket__button",
+          this.element
+        )!;
 
-    this.orderButton.addEventListener('click', () => {
-      events.emit('cart:order');
+    this.orderButton.addEventListener("click", () => {
+      events.emit("cart:order");
     });
   }
 
@@ -33,8 +41,7 @@ export class CartView extends Component<CartData>{
 
   /** Отрисовываем список товаров */
   set content(items: HTMLElement[]) {
-    this.listElement.innerHTML = '';
-    let total = 0;
+    this.listElement.innerHTML = "";
 
     items.forEach((item) => {
       this.listElement.appendChild(item);

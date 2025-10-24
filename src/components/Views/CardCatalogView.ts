@@ -1,6 +1,11 @@
-import { cloneTemplate, ensureElement, resolveImagePath } from "../../utils/utils";
+import {
+  cloneTemplate,
+  ensureElement,
+  resolveImagePath,
+  setCategory,
+} from "../../utils/utils";
 import { Component } from "../base/Component";
-import { IEvents } from "../base/Events";
+import { events } from "../base/Events";
 
 export interface CardCatalogData {
   id: string;
@@ -10,27 +15,39 @@ export interface CardCatalogData {
   image: string;
 }
 
-export class CardCatalogView extends Component<CardCatalogData>{
+export class CardCatalogView extends Component<CardCatalogData> {
   private element: HTMLButtonElement;
   private titleElement: HTMLElement;
   private priceElement: HTMLElement;
   private categoryElement: HTMLElement;
   private imageElement: HTMLImageElement;
 
-  constructor(protected events: IEvents, private data: CardCatalogData) {
-    const rootContainer = cloneTemplate<HTMLButtonElement>('#card-catalog');
+  constructor(private data: CardCatalogData) {
+    const rootContainer = cloneTemplate<HTMLButtonElement>("#card-catalog");
     super(rootContainer);
     this.element = rootContainer;
-    this.titleElement = ensureElement<HTMLElement>('.card__title', this.element)!;
-    this.priceElement = ensureElement<HTMLElement>('.card__price', this.element)!;
-    this.categoryElement = ensureElement<HTMLElement>('.card__category', this.element)!;
-    this.imageElement = ensureElement<HTMLImageElement>('.card__image', this.element)!;
+    this.titleElement = ensureElement<HTMLElement>(
+      ".card__title",
+      this.element
+    )!;
+    this.priceElement = ensureElement<HTMLElement>(
+      ".card__price",
+      this.element
+    )!;
+    this.categoryElement = ensureElement<HTMLElement>(
+      ".card__category",
+      this.element
+    )!;
+    this.imageElement = ensureElement<HTMLImageElement>(
+      ".card__image",
+      this.element
+    )!;
 
     this.render(this.data);
 
-    this.element.addEventListener('click', () => {
-      events.emit('card:select', {id: this.data.id});
-    })
+    this.element.addEventListener("click", () => {
+      events.emit("card:select", { id: this.data.id });
+    });
   }
 
   render(data: CardCatalogData): HTMLButtonElement {
@@ -40,11 +57,10 @@ export class CardCatalogView extends Component<CardCatalogData>{
 
     // Цена: если null → пишем "Бесценно"
     this.priceElement.textContent =
-      data.price === null ? 'Бесценно' : `${data.price} синапсов`;
+      data.price === null ? "Бесценно" : `${data.price} синапсов`;
 
     // Категория
-    this.categoryElement.textContent = data.category;
-    //this.setCategory(data.category);
+    this.categoryElement = setCategory(data.category, this.categoryElement);
 
     // Картинка
     this.imageElement.src = resolveImagePath(data.image);

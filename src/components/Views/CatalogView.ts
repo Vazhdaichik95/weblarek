@@ -12,11 +12,11 @@ export class CatalogView extends Component<CatalogData> {
     const rootContainer = ensureElement<HTMLElement>(nameContainer);
     super(rootContainer);
 
-    this.container= rootContainer;
+    this.container = rootContainer;
   }
 
   set content(items: HTMLElement[]) {
-    this.container.innerHTML='';
+    this.container.innerHTML = "";
     items.forEach((item) => {
       this.container.appendChild(item);
     });

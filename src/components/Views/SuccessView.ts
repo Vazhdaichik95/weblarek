@@ -1,25 +1,36 @@
-import { cloneTemplate } from '../../utils/utils';
-import { IEvents } from '../base/Events';
+import { cloneTemplate } from "../../utils/utils";
+import { Component } from "../base/Component";
+import { events } from "../base/Events";
 
-export class SuccessView {
+interface SuccessData {
+  total: number;
+}
+
+export class SuccessView extends Component<SuccessData> {
   private element: HTMLElement;
   private descriptionEl: HTMLElement;
   private closeButton: HTMLButtonElement;
 
-  constructor(protected events: IEvents) {
-    this.element = cloneTemplate<HTMLElement>('#success');
-    this.descriptionEl = this.element.querySelector('.order-success__description')!;
-    this.closeButton = this.element.querySelector('.order-success__close')!;
+  constructor() {
+    const rootContainer = cloneTemplate<HTMLElement>("#success");
+    super(rootContainer);
+    this.element = rootContainer;
+    this.descriptionEl = this.element.querySelector(
+      ".order-success__description"
+    )!;
+    this.closeButton = this.element.querySelector(".order-success__close")!;
 
     // обработчик кнопки закрытия
-    this.closeButton.addEventListener('click', () => {
-      events.emit('success:close', {});
+    this.closeButton.addEventListener("click", () => {
+      events.emit("success:close", {});
     });
   }
 
-  /** Отрисовать сумму заказа */
-  render(total: number): HTMLElement {
-    this.descriptionEl.textContent = `Списано ${total} синапсов`;
+  set total(value: number) {
+    this.descriptionEl.textContent = `Списано ${value} синапсов`;
+  }
+
+  getElement(): HTMLElement {
     return this.element;
   }
 }

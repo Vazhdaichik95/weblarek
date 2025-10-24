@@ -1,6 +1,6 @@
 import { cloneTemplate, ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
-import { IEvents } from "../base/Events";
+import { events } from "../base/Events";
 
 export interface CardInCartData {
   id: string;
@@ -15,26 +15,37 @@ export class CardInCartView extends Component<CardInCartData> {
   private priceElement: HTMLElement;
   private deleteFromCartButton: HTMLButtonElement;
 
-  constructor(protected events: IEvents, cardData: CardInCartData, index: number) {
-    const rootContainer = cloneTemplate<HTMLButtonElement>('#card-basket');
+  constructor(cardData: CardInCartData, index: number) {
+    const rootContainer = cloneTemplate<HTMLButtonElement>("#card-basket");
     super(rootContainer);
     this.container = rootContainer; //
-    this.indexCardElement = ensureElement<HTMLElement>('.basket__item-index', this.container);
-    this.titleElement = ensureElement<HTMLElement>('.card__title', this.container);
-    this.priceElement = ensureElement<HTMLElement>('.card__price', this.container);
-    this.deleteFromCartButton = ensureElement<HTMLButtonElement>('.basket__item-delete', this.container);
+    this.indexCardElement = ensureElement<HTMLElement>(
+      ".basket__item-index",
+      this.container
+    );
+    this.titleElement = ensureElement<HTMLElement>(
+      ".card__title",
+      this.container
+    );
+    this.priceElement = ensureElement<HTMLElement>(
+      ".card__price",
+      this.container
+    );
+    this.deleteFromCartButton = ensureElement<HTMLButtonElement>(
+      ".basket__item-delete",
+      this.container
+    );
 
-    this.indexCardElement.textContent = String(index+1);
+    this.indexCardElement.textContent = String(index + 1);
     this.title = cardData.title;
     this.price = cardData.price;
 
-    this.deleteFromCartButton.addEventListener('click',() => {
-          this.events.emit('cart:remove', { index });
-        })
+    this.deleteFromCartButton.addEventListener("click", () => {
+      events.emit("cart:remove", { index });
+    });
   }
 
-  set id(idData: string) {
-  }
+  set id(idData: string) {}
 
   set title(titleData: string) {
     this.titleElement.textContent = titleData;

@@ -190,6 +190,261 @@ interface IBuyer {
 
 `constructor(protected api: IApi)` - В конструктор передается объект, соответствующий интерфейсу IApi.
 
-Методы классаЖ
+Методы класса
 `getAllProducts(): Promise<IProduct[]>` - получение всех товаров для главного каталога. 
 `sendOrder(orderData: TOrder): Promise<TOrderResponse>` - отправка на сервер заказа покупателя.
+
+### Представления
+
+#### Класс HeaderView
+
+Является представлением для шапки сайта (в частности кнопки "корзина" и счетчика товаров в корзине)
+
+Интерфейс IHeaderData {
+  counter: number;
+}
+
+Класс является наследником класса Component<IHeaderData>
+
+Конструктор:
+`constructor(nameContainer: string)` - конструктор принимает имя класса элемента, в котором находятся элементы кнопки и счетчика. 
+
+Поля класса:  
+`protected counterElement: HTMLElement` -  хранит элемент с счетчиком.
+`protected cartButton: HTMLButtonElement` -  хранит элемент с кнопкой. 
+
+Методы класса:  
+`set counter(value: number)` - сохранение значения счетчика.
+
+#### Класс CatalogView
+
+Является представлением для каталога товаров
+
+Интерфейс CatalogData {
+  content: HTMLElement[];
+}
+
+Класс является наследником класса Component<CatalogData>
+
+Конструктор:
+`constructor(nameContainer: string)` - конструктор принимает имя класса элемента каталога. 
+
+Поля класса:  
+`container: HTMLElement` -  хранит элемент с контейнером, в который добавляются товары.
+
+Методы класса:  
+`set content(items: HTMLElement[])` - сохранение массива элементов карточек товаров.
+
+#### Класс ModalView
+
+Является представлением для модального окна
+
+Интерфейс ModalData {
+  content: HTMLElement;
+}
+
+Класс является наследником класса Component<ModalData>
+
+Конструктор:
+`constructor(nameContainer: string)` - конструктор принимает имя класса элемента модального окна. 
+
+Поля класса:  
+`rootContainer: HTMLElement` -  хранит элемент модального окна.
+`container: HTMLElement` -  хранит элемент с контейнером, в который добавляется содержимое окна.
+`closeButton: HTMLButtonElement` -  хранит элемент с кнопкой закрытия окна.
+
+Методы класса:  
+`set content(items: HTMLElement)` - сохранение содержимого модального окна.
+`open(contentElement: HTMLElement)` - добавление к элементу модального окна класса "modal_active" для открытия.
+`close()` - удаление у элемента модального окна класса "modal_active" для закрытия.
+
+#### Класс CardCatalogView
+
+Является представлением карточки товара в каталоге
+
+Интерфейс CardCatalogData {
+  id: string;
+  title: string;
+  price: number | null;
+  category: string;
+  image: string;
+}
+
+Класс является наследником класса Component<CardCatalogData>
+
+Конструктор:
+`constructor(private data: CardCatalogData)` - конструктор принимает данные о товаре. 
+
+Поля класса:  
+`element: HTMLButtonElement` -  хранит элемент карточки товара, является кнопкой.
+`titleElement: HTMLElement` -  хранит элемент названия карточки.
+`priceElement: HTMLElement` -  хранит элемент цены карточки.
+`categoryElement: HTMLElement` -  хранит элемент категории карточки.
+`imageElement: HTMLImageElement` -  хранит элемент с изображением карточки.
+
+Методы класса:  
+`render(data: CardCatalogData): HTMLButtonElement` - отрисовка карточки.
+`getElement(): HTMLButtonElement` - получение элемента карточки.
+
+#### Класс CardPreviewView
+
+Является представлением карточки товара в модальном окне
+
+Интерфейс CardPreviewData {
+  product: IProduct;
+  onCart: boolean;
+}
+
+Класс является наследником класса Component<CardPreviewData>
+
+Конструктор класса не принимает параметров. 
+
+Поля класса:  
+`element: HTMLButtonElement` -  хранит элемент карточки товара, является кнопкой.
+`titleElement: HTMLElement` -  хранит элемент названия карточки.
+`descriptionElement: HTMLElement` -  хранит элемент названия карточки.
+`priceElement: HTMLElement` -  хранит элемент цены карточки.
+`categoryElement: HTMLElement` -  хранит элемент категории карточки.
+`imageElement: HTMLImageElement` -  хранит элемент с изображением карточки.
+`buttonElement: HTMLButtonElement` -  хранит элемент с изображением карточки.
+
+Методы класса:  
+`set product(productData: IProduct)` - сохранение данных товара.
+`getElement(): HTMLButtonElement` - получение элемента карточки.
+`private updateButton(product: IProduct, inCart: boolean)` - обновление кнопки в зависимости от того, добавлена карточка в корзину или нет.
+
+#### Класс CartView
+
+Является представлением корзины
+
+Интерфейс CartData {
+  content: HTMLElement[];
+  totalPrice: number;
+}
+
+Класс является наследником класса Component<CartData>
+
+Конструктор класса не принимает параметров.
+
+Поля класса:  
+`element: HTMLButtonElement` -  хранит элемент корзины.
+`listElement: HTMLElement` -  хранит элемент списка, в который добавляются карточки товара.
+`totalElement: HTMLElement` -  хранит элемент с итоговой стоимостью.
+`orderButton: HTMLButtonElement` -  хранит элемент с кнопкой "Офрмить заказ".
+
+Методы класса:  
+`set totalPrice(total: number)` - сохранение общей стоимости.
+`set content(items: HTMLElement[])` - сохранение списка элементов с карточками тооваров.
+`getElement(): HTMLButtonElement` - получение элемента корзины.
+
+#### Класс CardInCartView
+
+Является представлением карточки товара в каталоге
+
+Интерфейс CardInCartData {
+  id: string;
+  title: string;
+  price: number;
+}
+
+Класс является наследником класса Component<CardInCartData>
+
+Конструктор:
+`constructor(cardData: CardInCartData, index: number)` - конструктор принимает данные о товаре и порядковый номер в корзине. 
+
+Поля класса:  
+`container: HTMLElement` -  хранит элемент карточки товара.
+`titleElement: HTMLElement` -  хранит элемент названия карточки.
+`priceElement: HTMLElement` -  хранит элемент цены карточки.
+`indexCardElement: HTMLElement` -  хранит элемент порядкового номера карточки в корзине.
+`deleteFromCartButton: HTMLButtonElement` -  хранит элемент с кнопкой удаления карточки из корзины.
+
+Методы класса:  
+`set id(idData: string)` - сохранение id карточки.
+`set title(titleData: string)` - сохранение названия карточки.
+`set price(priceData: number)` - сохранение цены карточки.
+`getElement(): HTMLElement` - получение элемента карточки.
+
+#### Класс OrderFormView
+
+Является представлением первой части формы для оформления заказа
+
+Конструктор:
+`constructor(initial?: Partial<IBuyer>)` - конструктор принимает данные о покупателе. 
+
+Поля класса:  
+`element: HTMLFormElement` -  хранит элемент формы.
+`btnCard: HTMLButtonElement` -  хранит элемент кнопки выбора способа оплаты.
+`btnCash: HTMLButtonElement` -  хранит элемент кнопки выбора способы оплаты.
+`addressInput: HTMLInputElement` -  хранит элемент текстового поля для указания адреса.
+`submitBtn: HTMLButtonElement` -  хранит элемент с кнопкой продолжения оформления заказа.
+`errorEl: HTMLElement` -  хранит элемент указанием возможных ошибок валидации.
+
+Методы класса:  
+`private setPayment(payment: Payment)` - сохранение способа оплаты.
+`validate(): string[]` - валидация формы.
+`getElement(): HTMLElement` - получение элемента карточки.
+
+#### Класс ContactsFormView
+
+Является представлением второй части формы для оформления заказа
+
+Конструктор:
+`constructor(initial?: Partial<IBuyer>)` - конструктор принимает данные о покупателе. 
+
+Поля класса:  
+`element: HTMLFormElement` -  хранит элемент формы.
+`emailInput: HTMLInputElement` -  хранит элемент текстового поля для указания email.
+`phoneInput: HTMLInputElement` -  хранит элемент текстового поля для указания телефона.
+`submitBtn: HTMLButtonElement` -  хранит элемент с кнопкой оформления заказа.
+`errorEl: HTMLElement` -  хранит элемент указанием возможных ошибок валидации.
+
+Методы класса:  
+`validate(): string[]` - валидация формы.
+`getElement(): HTMLElement` - получение элемента карточки.
+
+#### Класс SuccessView
+
+Является представлением сообщения об успешной отправке заказа
+
+Интерфейс SuccessData {
+  total: number;
+}
+
+Класс является наследником класса Component<CardInCartData>
+
+Конструктор класса не принимает параметров.
+
+Поля класса:  
+`element: HTMLFormElement` -  хранит элемент формы.
+`descriptionEl: HTMLElement` -  хранит элемент для указания итоговой стоимости заказа.
+`closeButton: HTMLButtonElement` -  хранит элемент кнопки для закрытия окна.
+
+Методы класса:  
+`set total(value: number)` - сохранение итоговой стоимости заказа.
+`getElement(): HTMLElement` - получение элемента карточки.
+
+### Презентер
+
+#### Класс PresenterApp
+
+Является презентером приложения
+
+Конструктор класса не принимает параметров.
+
+Обрабатываемые события:
+`card:select` - открытие и отрисовка карточки товара при выборе карточки в каталоге.
+`cart:add` - добавление карточки в корзину.
+`cart:remove-by-id` - удаление карточки из корзины (в модальном окне "карточка товара").
+`basket:open` - Открытие корзины.
+`cart:remove` - удаление карточки из корзины (в модальном окне "корзина").
+`cart:order` - начало оформления заказа.
+`order:next` - переход ко второй части оформления заказа.
+`order:confirm` - конец оформления заказа и отправка данных на сервер.
+`success:close` - закрытие модального окна после оформления заказа.
+
+Методы:
+`init()` - инициализация приложения.
+`loadCatalog()` - загрузка каталога.
+`initEvents()` - инициализация событий.
+`updateCart()` - обновление корзины.

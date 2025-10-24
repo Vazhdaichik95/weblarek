@@ -11,3 +11,10 @@ export const settings = {
 
 };
 
+export const categoryMap: Record<string, { label: string; modifier: string }> = {
+  'софт-скил': { label: 'софт-скил', modifier: 'soft' },
+  'хард-скил': { label: 'хард-скил', modifier: 'hard' },
+  'другое': { label: 'другое', modifier: 'other' },
+  'дополнительное': { label: 'дополнительное', modifier: 'additional' },
+  'кнопка': { label: 'кнопка', modifier: 'button' },
+};

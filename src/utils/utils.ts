@@ -1,5 +1,5 @@
 import { IProduct } from "../types";
-import { API_ORIGIN } from "./constants";
+import { API_ORIGIN, categoryMap } from "./constants";
 
 export function pascalToKebab(value: string): string {
     return value.replace(/([a-z0–9])([A-Z])/g, "$1-$2").toLowerCase();
@@ -172,4 +172,13 @@ export function getTotalPrice(products: IProduct[]) {
         if(product.price) total+=product.price;
     });
     return total;
+}
+
+export function setCategory(category: string, categoryEl: HTMLElement) {
+    const entry = Object.values(categoryMap).find((c) => c.label === category);
+
+    categoryEl.textContent = entry?.label || category;
+    categoryEl.className = `card__category card__category_${entry?.modifier || 'other'}`;
+
+    return categoryEl;
 }
