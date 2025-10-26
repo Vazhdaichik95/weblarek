@@ -1,6 +1,6 @@
 import { cloneTemplate, ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
-import { events } from "../base/Events";
+import { EventEmitter } from "../base/Events";
 
 export interface CartData {
   content: HTMLElement[];
@@ -13,25 +13,25 @@ export class CartView extends Component<CartData> {
   private totalElement: HTMLElement;
   private orderButton: HTMLButtonElement;
 
-  constructor() {
+  constructor(protected events: EventEmitter) {
     const rootContainer = cloneTemplate<HTMLElement>("#basket");
     super(rootContainer);
     this.element = rootContainer;
     this.listElement = ensureElement<HTMLElement>(
-          ".basket__list",
-          this.element
-        )!;
+      ".basket__list",
+      this.element
+    )!;
     this.totalElement = ensureElement<HTMLElement>(
-          ".basket__price",
-          this.element
-        )!;
+      ".basket__price",
+      this.element
+    )!;
     this.orderButton = ensureElement<HTMLButtonElement>(
-          ".basket__button",
-          this.element
-        )!;
+      ".basket__button",
+      this.element
+    )!;
 
     this.orderButton.addEventListener("click", () => {
-      events.emit("cart:order");
+      this.events.emit("cart:order");
     });
   }
 

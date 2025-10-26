@@ -1,29 +1,30 @@
 import { IBuyer, TPayment, TValidateErrors } from "../../types";
+import { EventEmitter } from "../base/Events";
 
 export class Buyer {
   private buyerData: IBuyer;
 
-  constructor() {
-    this.buyerData= {
-      payment: '',
-      email: '',
-      phone: '',
-      address: ''
-    }
+  constructor(protected events: EventEmitter) {
+    this.buyerData = {
+      payment: "",
+      email: "",
+      phone: "",
+      address: "",
+    };
   }
 
   /**
    * сохранение вида оплаты
    */
   setPayment(payment: TPayment) {
-    this.buyerData.payment=payment;
+    this.buyerData.payment = payment;
   }
 
   /**
    * сохранение email.
    */
   setEmail(email: string) {
-    this.buyerData.email=email;
+    this.buyerData.email = email;
   }
 
   /**
@@ -37,7 +38,7 @@ export class Buyer {
    * сохранение адреса доставки.
    */
   setAddress(address: string) {
-    this.buyerData.address=address;
+    this.buyerData.address = address;
   }
 
   setBuyerData(data: Partial<IBuyer>) {
@@ -79,25 +80,58 @@ export class Buyer {
     return this.buyerData;
   }
 
+  setData(key: string, value: string) {
+    switch (key) {
+      case "address":
+        this.setAddress(value);
+        break;
+      case "payment":
+        this.setPayment(value as TPayment);
+        break;
+      case "phone":
+        this.setPhone(value);
+        break;
+      case "email":
+        this.setEmail(value);
+        break;
+    }
+    this.events.emit("form:validate", this.validateData());
+  }
+
   /**
-   * очищение данных.  
+   * очищение данных.
    */
   clearData() {
-    this.buyerData.payment='';
-    this.buyerData.email='';
-    this.buyerData.phone='';
-    this.buyerData.address='';
+    this.buyerData.payment = "";
+    this.buyerData.email = "";
+    this.buyerData.phone = "";
+    this.buyerData.address = "";
   }
 
   /**
    * проверка(валидация) данных
    */
   validateData(): TValidateErrors {
-    return {
-      payment: this.buyerData.payment === '' ? 'Необходимо выбрать способ оплаты': '',
-      email: this.buyerData.email === '' ? 'Необходимо ввести email' : '',
-      phone: this.buyerData.phone === '' ? 'Необходимо ввести номер телефона' : '',
-      address: this.buyerData.address === '' ? 'Необходимо ввести адрес доставки' : ''
-    }
+    const errors: TValidateErrors = {
+      payment: "",
+      email: "",
+      phone: "",
+      address: "",
+    };
+
+    if (this.getPayment() === "") errors.payment = "Выберите способ оплаты";
+
+    if (this.getAddress() === "" || this.getAddress().length < 3)
+      errors.address = "Введите адрес доставки";
+
+    if (this.getEmail() === "") errors.email = "Введите email";
+    else if (!/\S+@\S+\.\S+/.test(this.getEmail()))
+      errors.email = "Неверный email";
+
+    if (this.getPhone() === "") errors.phone = "Введите теелфон";
+    else if (this.getPhone().replace(/\D/g, "").length < 10)
+      errors.phone = "Неверный телефон";
+
+    return errors;
   }
 }

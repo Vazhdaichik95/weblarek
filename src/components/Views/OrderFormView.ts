@@ -6,11 +6,11 @@ type Payment = IBuyer["payment"]; // 'card' | 'cash'
 
 export class OrderFormView {
   private element: HTMLFormElement;
-  private btnCard: HTMLButtonElement;
-  private btnCash: HTMLButtonElement;
-  private addressInput: HTMLInputElement;
-  private submitBtn: HTMLButtonElement;
-  private errorEl: HTMLElement;
+  btnCard: HTMLButtonElement;
+  btnCash: HTMLButtonElement;
+  addressInput: HTMLInputElement;
+  submitBtn: HTMLButtonElement;
+  errorEl: HTMLElement;
 
   private state: { payment?: Payment; address: string } = { address: "" };
 
@@ -41,22 +41,9 @@ export class OrderFormView {
 
     this.syncFromStateToView();
 
-    // подписки
-    this.btnCard.addEventListener("click", () => this.setPayment("card"));
-    this.btnCash.addEventListener("click", () => this.setPayment("cash"));
-    this.addressInput.addEventListener("input", () => {
-      this.state.address = this.addressInput.value.trim();
-      this.validateAndToggle();
-    });
-
     this.element.addEventListener("submit", (e) => {
       e.preventDefault();
-      if (this.validateAndToggle()) {
-        events.emit<{ payment: Payment; address: string }>("order:next", {
-          payment: this.state.payment!,
-          address: this.state.address,
-        });
-      }
+      events.emit("order:next");
     });
   }
 
@@ -65,16 +52,18 @@ export class OrderFormView {
     return this.element;
   }
 
-  private setPayment(payment: Payment) {
+  setPayment(payment: Payment) {
     this.state.payment = payment;
     this.syncPaymentButtons();
-    this.validateAndToggle();
+  }
+
+  setAddress(address: string) {
+    this.state.address = address;
   }
 
   private syncFromStateToView() {
     this.addressInput.value = this.state.address ?? "";
     this.syncPaymentButtons();
-    this.validateAndToggle();
   }
 
   private syncPaymentButtons() {
@@ -93,22 +82,5 @@ export class OrderFormView {
       this.btnCash.classList.add(active);
       this.btnCash.classList.remove(normal);
     }
-  }
-
-  private validate(): string[] {
-    const errors: string[] = [];
-    if (!this.state.payment) errors.push("Выберите способ оплаты");
-    if (!this.state.address || this.state.address.length < 3) {
-      errors.push("Укажите адрес доставки");
-    }
-    return errors;
-  }
-
-  private validateAndToggle(): boolean {
-    const errors = this.validate();
-    this.errorEl.textContent = errors.join(". ");
-    const valid = errors.length === 0;
-    this.submitBtn.disabled = !valid;
-    return valid;
   }
 }

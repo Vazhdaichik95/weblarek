@@ -6,7 +6,7 @@ import {
   setCategory,
 } from "../../utils/utils";
 import { Component } from "../base/Component";
-import { events } from "../base/Events";
+import { EventEmitter } from "../base/Events";
 
 interface CardPreviewData {
   product: IProduct;
@@ -21,46 +21,38 @@ export class CardPreviewView extends Component<CardPreviewData> {
   private categoryElement: HTMLElement;
   private imageElement: HTMLImageElement;
   private buttonElement: HTMLButtonElement;
+  private productData: IProduct | null = null;
 
-  private onCartValue = false;
   private checkInCart: ((id: string) => boolean) | null = null;
 
-  constructor() {
+  constructor(protected events: EventEmitter) {
     const rootContainer = cloneTemplate<HTMLElement>("#card-preview");
     super(rootContainer);
     this.element = rootContainer;
     this.titleElement = ensureElement<HTMLElement>(
-          ".card__title",
-          this.element
-        );
+      ".card__title",
+      this.element
+    );
     this.descriptionElement = ensureElement<HTMLElement>(
-          ".card__text",
-          this.element
-        );
+      ".card__text",
+      this.element
+    );
     this.priceElement = ensureElement<HTMLElement>(
-          ".card__price",
-          this.element
-        );
+      ".card__price",
+      this.element
+    );
     this.categoryElement = ensureElement<HTMLElement>(
-          ".card__category",
-          this.element
-        );
+      ".card__category",
+      this.element
+    );
     this.imageElement = ensureElement<HTMLImageElement>(
-          ".card__image",
-          this.element
-        );
+      ".card__image",
+      this.element
+    );
     this.buttonElement = ensureElement<HTMLButtonElement>(
-          ".card__button",
-          this.element
-        );
-
-    // обновление кнопки в открытой карточке при изменении корзины
-    events.on("cart:changed", () => {
-      if (this.product && this.checkInCart) {
-        const inCart = this.checkInCart(this.product.id);
-        this.updateButton(this.product, inCart);
-      }
-    });
+      ".card__button",
+      this.element
+    );
   }
 
   // проверка на наличие в корзине
@@ -68,11 +60,9 @@ export class CardPreviewView extends Component<CardPreviewData> {
     this.checkInCart = fn;
   }
 
-  set onCart(value: boolean) {
-    this.onCartValue = value;
-  }
-
   set product(productData: IProduct) {
+    this.productData = productData;
+
     // Текстовые поля
     this.titleElement.textContent = productData.title;
     this.descriptionElement.textContent = productData.description || "";
@@ -92,7 +82,7 @@ export class CardPreviewView extends Component<CardPreviewData> {
     this.imageElement.alt = productData.title;
 
     // Кнопка (зависит от onCart и цены)
-    this.updateButton(productData, this.onCartValue);
+    this.updateButton();
   }
 
   getElement(): HTMLElement {
@@ -100,27 +90,34 @@ export class CardPreviewView extends Component<CardPreviewData> {
   }
 
   /** Обновляет текст/состояние/обработчик кнопки */
-  private updateButton(product: IProduct, inCart: boolean) {
-    if (product.price === null) {
-      this.priceElement.textContent = "Бесценно";
-      this.buttonElement.disabled = true;
-      this.buttonElement.textContent = "Недоступно";
-      this.buttonElement.onclick = null;
-    } else {
-      this.priceElement.textContent = `${product.price} синапсов`;
-      this.buttonElement.disabled = false;
-      this.buttonElement.onclick = null;
-
-      if (inCart) {
-        this.buttonElement.textContent = "Удалить из корзины";
-        this.buttonElement.onclick = () => {
-          events.emit("cart:remove-by-id", { id: product.id });
-        };
+  updateButton() {
+    if (this.productData && this.checkInCart) {
+      const inCart = this.checkInCart(this.productData.id);
+      if (this.productData.price === null) {
+        this.priceElement.textContent = "Бесценно";
+        this.buttonElement.disabled = true;
+        this.buttonElement.textContent = "Недоступно";
+        this.buttonElement.onclick = null;
       } else {
-        this.buttonElement.textContent = "Купить";
-        this.buttonElement.onclick = () => {
-          events.emit("cart:add", product);
-        };
+        this.priceElement.textContent = `${this.productData.price} синапсов`;
+        this.buttonElement.disabled = false;
+        this.buttonElement.onclick = null;
+
+        if (inCart) {
+          this.buttonElement.textContent = "Удалить из корзины";
+          this.buttonElement.onclick = () => {
+            if (this.productData)
+              this.events.emit("cart:remove-by-id", {
+                id: this.productData.id,
+              });
+          };
+        } else {
+          this.buttonElement.textContent = "Купить";
+          this.buttonElement.onclick = () => {
+            if (this.productData)
+              this.events.emit("cart:add", this.productData);
+          };
+        }
       }
     }
   }

@@ -1,6 +1,6 @@
 import { cloneTemplate, ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
-import { events } from "../base/Events";
+import { EventEmitter } from "../base/Events";
 
 export interface CardInCartData {
   id: string;
@@ -15,7 +15,11 @@ export class CardInCartView extends Component<CardInCartData> {
   private priceElement: HTMLElement;
   private deleteFromCartButton: HTMLButtonElement;
 
-  constructor(cardData: CardInCartData, index: number) {
+  constructor(
+    protected events: EventEmitter,
+    cardData: CardInCartData,
+    index: number
+  ) {
     const rootContainer = cloneTemplate<HTMLButtonElement>("#card-basket");
     super(rootContainer);
     this.container = rootContainer; //
@@ -37,11 +41,12 @@ export class CardInCartView extends Component<CardInCartData> {
     );
 
     this.indexCardElement.textContent = String(index + 1);
+    this.id = cardData.id;
     this.title = cardData.title;
     this.price = cardData.price;
 
     this.deleteFromCartButton.addEventListener("click", () => {
-      events.emit("cart:remove", { index });
+      this.events.emit("cart:remove-by-id", { id: cardData.id });
     });
   }
 

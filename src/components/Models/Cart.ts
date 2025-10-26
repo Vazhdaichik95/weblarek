@@ -1,4 +1,5 @@
 import { IProduct } from "../../types";
+import { EventEmitter } from "../base/Events";
 
 /**
  * Содержит в себе массив товаров, выбранных покупателем для покупки.
@@ -6,7 +7,7 @@ import { IProduct } from "../../types";
 export class Cart {
   private products: Map<string, IProduct>;
 
-  constructor() {
+  constructor(protected events: EventEmitter) {
     this.products = new Map<string, IProduct>();
   }
 
@@ -20,8 +21,9 @@ export class Cart {
   /**
    * добавление товара, принимает товар (IProduct), выбранный покупателем.
    */
-  addProduct(product: IProduct|undefined) {
-    if(product) this.products.set(product.id, product);
+  addProduct(product: IProduct | undefined) {
+    if (product) this.products.set(product.id, product);
+    this.events.emit("cart:change");
   }
 
   /**
@@ -29,6 +31,7 @@ export class Cart {
    */
   deleteProduct(id: string) {
     this.products.delete(id);
+    this.events.emit("cart:change");
   }
 
   /**
@@ -36,15 +39,16 @@ export class Cart {
    */
   clearCart() {
     this.products.clear();
+    this.events.emit("cart:change");
   }
 
   /**
    * получение общей суммы заказа
    */
   totalPrice(): number {
-    let totalPrice: number=0;
-    for(let product of this.products.values()) {
-      totalPrice += product.price===null ? 0 : product.price;
+    let totalPrice: number = 0;
+    for (let product of this.products.values()) {
+      totalPrice += product.price === null ? 0 : product.price;
     }
     return totalPrice;
   }
@@ -59,7 +63,7 @@ export class Cart {
   /**
    * проверка наличия товара в корзине по id, принимает id товара.
    */
-  isProductInCart(id:string):boolean {
+  isProductInCart(id: string): boolean {
     return this.products.get(id) !== undefined;
   }
 }

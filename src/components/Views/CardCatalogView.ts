@@ -5,7 +5,7 @@ import {
   setCategory,
 } from "../../utils/utils";
 import { Component } from "../base/Component";
-import { events } from "../base/Events";
+import { EventEmitter } from "../base/Events";
 
 export interface CardCatalogData {
   id: string;
@@ -22,7 +22,7 @@ export class CardCatalogView extends Component<CardCatalogData> {
   private categoryElement: HTMLElement;
   private imageElement: HTMLImageElement;
 
-  constructor(private data: CardCatalogData) {
+  constructor(protected events: EventEmitter, private data: CardCatalogData) {
     const rootContainer = cloneTemplate<HTMLButtonElement>("#card-catalog");
     super(rootContainer);
     this.element = rootContainer;
@@ -46,7 +46,7 @@ export class CardCatalogView extends Component<CardCatalogData> {
     this.render(this.data);
 
     this.element.addEventListener("click", () => {
-      events.emit("card:select", { id: this.data.id });
+      this.events.emit("card:select", { id: this.data.id });
     });
   }
 

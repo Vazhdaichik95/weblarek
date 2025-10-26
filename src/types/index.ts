@@ -50,8 +50,3 @@ export type TValidateErrors = {
   phone: string;
   address: string;
 }
-
-export interface OrderNextPayload {
-  payment: IBuyer['payment'];
-  address: string;
-}
