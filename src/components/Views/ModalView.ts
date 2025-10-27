@@ -10,6 +10,7 @@ export class ModalView extends Component<ModalData> {
   protected rootContainer: HTMLElement;
   protected container: HTMLElement;
   protected closeButton: HTMLButtonElement;
+  protected activeContent: HTMLElement | null = null;
 
   constructor(nameContainer: string) {
     const rootContainer = ensureElement<HTMLElement>(nameContainer);
@@ -36,12 +37,18 @@ export class ModalView extends Component<ModalData> {
     this.rootContainer.classList.add("modal_active");
   }
 
+  getActiveContent(): HTMLElement | null {
+    return this.activeContent;
+  }
+
   open(contentElement: HTMLElement) {
+    this.activeContent = contentElement;
     this.container.replaceChildren(contentElement);
     this.rootContainer.classList.add("modal_active");
   }
 
   close() {
+    this.activeContent = null;
     this.rootContainer.classList.remove("modal_active");
     this.container.replaceChildren();
   }

@@ -13,9 +13,10 @@ import { CardInCartView } from "../Views/CardInCartView";
 import { CardPreviewView } from "../Views/CardPreviewView";
 import { CartView } from "../Views/CartView";
 import { CatalogView } from "../Views/CatalogView";
-import { FormView } from "../Views/FormView";
+import { ContactsFormView } from "../Views/ContactsFormView";
 import { HeaderView } from "../Views/HeaderView";
 import { ModalView } from "../Views/ModalView";
+import { OrderFormView } from "../Views/OrderFormView";
 import { SuccessView } from "../Views/SuccessView";
 
 export class PresenterApp {
@@ -35,7 +36,8 @@ export class PresenterApp {
 
   private previewCard: CardPreviewView | null = null;
 
-  private formView: FormView;
+  private orderFormView: OrderFormView;
+  private contactsFormView: ContactsFormView;
 
   constructor() {
     this.events = new EventEmitter();
@@ -52,7 +54,8 @@ export class PresenterApp {
     this.modalView = new ModalView("#modal-container");
     this.cartView = new CartView(this.events);
 
-    this.formView = new FormView(this.events);
+    this.orderFormView = new OrderFormView(this.events);
+    this.contactsFormView = new ContactsFormView(this.events);
   }
 
   init() {
@@ -128,7 +131,8 @@ export class PresenterApp {
 
     //начало оформления заказа
     this.events.on("cart:order", () => {
-      this.modalView.open(this.formView.getOrderForm().getElement());
+      this.modalView.open(this.orderFormView.getElement());
+      console.log(this.orderFormView.getElement());
     });
 
     this.events.on<{ name: string; value: string }>(
@@ -139,16 +143,25 @@ export class PresenterApp {
     );
 
     this.events.on<TValidateErrors>("form:validate", (errors) => {
-      this.formView.validate(errors);
+      console.log((this.modalView.getActiveContent() as HTMLFormElement).name);
+      switch((this.modalView.getActiveContent() as HTMLFormElement).name) {
+        case "order":
+          this.orderFormView.validate(errors);
+          break;
+        case "contacts":
+          this.contactsFormView.validate(errors);
+          break;
+      }
     });
 
     //переход ко второй части оформления заказа
-    events.on("order:next", () => {
-      this.modalView.open(this.formView.getContactsForm().getElement());
+    this.events.on("order:next", () => {
+      console.log("i`m here");
+      this.modalView.open(this.contactsFormView.getElement());
     });
 
     //конец оформления заказа и отправка данных на сервер
-    events.on("order:confirm", async () => {
+    this.events.on("order:confirm", async () => {
       const order = {
         ...this.buyer.getBuyerData(),
         items: this.cart.getProducts().map((p) => p.id),
@@ -157,7 +170,7 @@ export class PresenterApp {
 
       try {
         const result: { total: number } = await this.api.sendOrder(order);
-        const success = new SuccessView();
+        const success = new SuccessView(this.events);
         success.total = result.total;
         this.modalView.open(success.getElement());
 
@@ -168,7 +181,7 @@ export class PresenterApp {
     });
 
     //закрытие модального окна после оформления заказа
-    events.on("success:close", () => {
+    this.events.on("success:close", () => {
       if (this.previewCard) this.previewCard = null;
       this.modalView.close();
     });

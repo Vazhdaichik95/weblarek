@@ -1,40 +1,31 @@
-import { cloneTemplate, ensureElement } from "../../utils/utils";
-import { events } from "../base/Events";
+import { TValidateErrors } from "../../types";
+import { cloneTemplate } from "../../utils/utils";
+import { EventEmitter } from "../base/Events";
+import { FormView } from "./FormView";
 
 export interface ContactsData {
   email: string;
   phone: string;
 }
 
-export class ContactsFormView {
+export class ContactsFormView extends FormView{
   private element: HTMLFormElement;
-  emailInput: HTMLInputElement;
-  phoneInput: HTMLInputElement;
-  errorsEl: HTMLElement;
-  submitBtn: HTMLButtonElement;
 
-  constructor() {
-    this.element = cloneTemplate<HTMLFormElement>("#contacts");
+  constructor(protected events: EventEmitter) {
+    const rootContainer = cloneTemplate<HTMLFormElement>("#contacts");
 
-    this.emailInput = ensureElement<HTMLInputElement>(
-      'input[name="email"]',
-      this.element
-    );
-    this.phoneInput = ensureElement<HTMLInputElement>(
-      'input[name="phone"]',
-      this.element
-    );
-    this.errorsEl = ensureElement<HTMLElement>(".form__errors", this.element);
-    this.submitBtn = ensureElement<HTMLButtonElement>(
-      'button[type="submit"]',
-      this.element
-    );
+    super(events, rootContainer);
+    
+    this.element = rootContainer;
 
     this.element.addEventListener("submit", (e) => {
       e.preventDefault();
-
-      events.emit("order:confirm");
+      this.events.emit("order:confirm");
     });
+  }
+
+  validate(errors: TValidateErrors): void {
+      this.validateCommon({dataF:errors.email, dataS:errors.phone});
   }
 
   getElement(): HTMLFormElement {

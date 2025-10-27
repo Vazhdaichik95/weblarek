@@ -1,6 +1,6 @@
 import { cloneTemplate } from "../../utils/utils";
 import { Component } from "../base/Component";
-import { events } from "../base/Events";
+import { EventEmitter } from "../base/Events";
 
 interface SuccessData {
   total: number;
@@ -11,7 +11,7 @@ export class SuccessView extends Component<SuccessData> {
   private descriptionEl: HTMLElement;
   private closeButton: HTMLButtonElement;
 
-  constructor() {
+  constructor(protected events: EventEmitter) {
     const rootContainer = cloneTemplate<HTMLElement>("#success");
     super(rootContainer);
     this.element = rootContainer;
@@ -22,7 +22,7 @@ export class SuccessView extends Component<SuccessData> {
 
     // обработчик кнопки закрытия
     this.closeButton.addEventListener("click", () => {
-      events.emit("success:close", {});
+      this.events.emit("success:close", {});
     });
   }
 
